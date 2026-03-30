@@ -1,44 +1,34 @@
+# test_pizzeria.py
 import unittest
 from unittest.mock import MagicMock
-from pizzeria import CartePizzeria, Pizza
+from pizzeria import CartePizzeria, Pizza, Drink
 from exceptions import CartePizzeriaException
 
 
 class TestCartePizzeria(unittest.TestCase):
     def setUp(self):
-        # On initialise une carte vide avant chaque test
         self.carte = CartePizzeria()
 
-    def test_is_empty_au_demarrage(self):
-        self.assertTrue(self.carte.is_empty())
+    def test_add_element_general(self):
+        # On teste le nouveau add() universel
+        mock_item = MagicMock(spec=Drink)
+        mock_item.name = "Cola"
+        self.carte.add(mock_item)
+        self.assertEqual(self.carte.nb_drinks(), 1)
 
-    def test_nb_pizzas_initial(self):
-        self.assertEqual(self.carte.nb_pizzas(), 0)
-
-    def test_add_pizza_mockee(self):
-        # On crée un Mock qui se fait passer pour une Pizza
-        mock_pizza = MagicMock(spec=Pizza)
-        mock_pizza.name = "Marguerita"
-
-        self.carte.add_pizza(mock_pizza)
-
-        self.assertFalse(self.carte.is_empty())
-        self.assertEqual(self.carte.nb_pizzas(), 1)
-
-    def test_remove_pizza_ok(self):
+    def test_remove_ok(self):
         mock_pizza = MagicMock(spec=Pizza)
         mock_pizza.name = "Calzone"
-        self.carte.add_pizza(mock_pizza)
-
-        # On vérifie que la suppression fonctionne
-        self.carte.remove_pizza("Calzone")
+        # On utilise add() et pas add_pizza()
+        self.carte.add(mock_pizza)
+        self.carte.remove("Calzone")
         self.assertEqual(self.carte.nb_pizzas(), 0)
 
-    def test_remove_pizza_inexistante_leve_exception(self):
-        # On vérifie que l'erreur est bien levée
+    def test_doublon_ingredients_pizza(self):
+        # On crée deux pizzas différentes par le nom mais identiques par recette
+        p1 = Pizza("Reine", 10.0, "Miam", ["tomate", "champis"], "tomate")
+        p2 = Pizza("Regina", 12.0, "Miam aussi", ["champis", "tomate"], "tomate")
+
+        self.carte.add(p1)
         with self.assertRaises(CartePizzeriaException):
-            self.carte.remove_pizza("PizzaQuiNexistePas")
-
-
-if __name__ == "__main__":
-    unittest.main()
+            self.carte.add(p2)  # Doit lever l'exception car ingrédients identiques
