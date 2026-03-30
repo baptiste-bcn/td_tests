@@ -40,5 +40,5 @@ class TestCartePizzeria(unittest.TestCase):
             self.carte.remove_pizza("PizzaQuiNexistePas")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,32 +1,19 @@
----
-name: CI Pizzeria
-
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-
-    - name: Install dependencies
+- name: Install tools
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-cov
-        # Si tu as un fichier requirements.txt, décommente la ligne suivante :
-        # pip install -r requirements.txt
+        pip install pytest pytest-cov ruff mypy
 
-    - name: Test with pytest and coverage
+    - name: Lint with Ruff
       run: |
-        # On lance les tests et on échoue si la couverture est < 80%
+        # 'check' vérifie les erreurs, 'format --check' vérifie que le code est bien formaté
+        ruff check .
+        ruff format --check .
+
+    - name: Static type check with mypy
+      run: |
+        # On ignore les imports manquants pour les bibliothèques tierces non typées
+        mypy . --ignore-missing-imports --check-untyped-defs
+
+    - name: Test with coverage
+      run: |
         pytest --cov=. --cov-fail-under=80

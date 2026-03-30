@@ -1,27 +1,32 @@
 from exceptions import CartePizzeriaException
 
+
 class MenuItem:
     def __init__(self, name: str, price: float):
         self.name = name
         self.price = price
+
 
 class Pizza(MenuItem):
     def __init__(self, name, price, description, ingredients, base):
         super().__init__(name, price)
         self.description = description
         self.ingredients = list(ingredients)
-        self.base = base # "tomate" ou "crème"
+        self.base = base  # "tomate" ou "crème"
+
 
 class Drink(MenuItem):
     def __init__(self, name, price, is_alcoholic: bool):
         super().__init__(name, price)
         self.is_alcoholic = is_alcoholic
 
+
 class Dessert(MenuItem):
     def __init__(self, name, price, ingredients, is_homemade: bool):
         super().__init__(name, price)
         self.ingredients = list(ingredients)
         self.is_homemade = is_homemade
+
 
 class CartePizzeria:
     def __init__(self):
@@ -48,7 +53,10 @@ class CartePizzeria:
         if isinstance(element, Pizza):
             for e in self.elements:
                 if isinstance(e, Pizza):
-                    if set(e.ingredients) == set(element.ingredients) and e.base == element.base:
+                    if (
+                        set(e.ingredients) == set(element.ingredients)
+                        and e.base == element.base
+                    ):
                         raise CartePizzeriaException("Une pizza identique existe déjà.")
 
         self.elements.append(element)
